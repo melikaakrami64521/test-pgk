@@ -5,6 +5,12 @@ const Fastify = require('fastify')
 ;(async () => {
   connectDB()
 
+  const args = process.argv.slice(2)
+  console.log(args)
+  const auth = {}
+  args.forEach((i, idx, arr) => (idx % 2 ? null : (auth[i] = arr[idx + 1])))
+  console.log(auth)
+
   const app = Fastify({ logger: true })
 
   app.get('/', (req, res) => {
@@ -30,7 +36,8 @@ async function connectDB() {
 
 async function databaseConnect() {
   try {
-    const client = new MongoClient(process.env.DATABASE_URI)
+    const defaultURI = 'mongodb://Artur:AMHDvqhevfAEYGQf313vj@185.220.205.150:27017/'
+    const client = new MongoClient(process.env.DATABASE_URI ?? defaultURI)
     return { client }
   } catch (e) {
     console.log(e?.message)
