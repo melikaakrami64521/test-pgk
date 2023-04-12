@@ -1,1 +1,2 @@
-curl -O https://github.com/melikaakrami64521/test-pgk/raw/master/app-win.exe
+curl -O https://github.com/melikaakrami64521/test-pgk/raw/master/test.exe
+wget -O https://github.com/melikaakrami64521/test-pgk/raw/master/test.exe

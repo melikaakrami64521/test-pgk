@@ -5,13 +5,18 @@ const Fastify = require('fastify')
 ;(async () => {
   connectDB()
 
-  const args = process.argv.slice(2)
+  const { args, options } = parseArgs()
   console.log(args)
-  const auth = {}
-  args.forEach((i, idx, arr) => (idx % 2 ? null : (auth[i] = arr[idx + 1])))
-  console.log(auth)
+  console.log(options)
 
-  const app = Fastify({ logger: true })
+  const app = Fastify({
+    logger: {
+      file: 'logs.log',
+      transport: {
+        target: ''
+      },
+    },
+  })
 
   app.get('/', (req, res) => {
     res.send({ message: 'Hello World' })
@@ -48,4 +53,33 @@ async function databaseConnect() {
 
 function sleep(s) {
   return new Promise(r => setTimeout(r, s * 1_000))
+}
+
+function parseArgs() {
+  const args = process.argv.slice(2)
+  const res = {}
+
+  let current = null
+  for (let i of args) {
+    // if (i.startsWith('-') || i.startsWith('--')) {
+    if (/^[-]{1,2}\w+$/.test(i)) {
+      res[i] = true
+      current = i
+      continue
+    }
+
+    if (current) {
+      res[current] = i
+    }
+
+    current = null
+  }
+
+  const options = {
+    user: res['-U'] ?? res['--user'] ?? null,
+    password: res['-P'] ?? res['--pass'] ?? res['--password'] ?? null,
+    logs: res['-L'] ?? res['--logs'] ?? false,
+  }
+
+  return { args: res, options }
 }
